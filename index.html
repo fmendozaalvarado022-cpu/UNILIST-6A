@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>UNILIST - Universidades en México</title>
+
+<style>
+/* --- VARIABLES DE COLOR DINÁMICAS --- */
+:root {
+    --primary-color: #1e3a8a;
+    --secondary-color: #2563eb;
+    --bg-color: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.5s ease;
+}
+
+/* --- 1. MENÚ DE NAVEGACIÓN DESPLEGABLE --- */
+.navbar {
+    background: #111827; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar .logo {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.nav-item {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s, color 0.3s;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--card-bg);
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border-radius: 0 0 8px 8px;
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu li a {
+    color: var(--text-color);
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s;
+}
+
+.dropdown-menu li a:hover {
+    background: var(--bg-color);
+    color: var(--secondary-color);
+}
+
+.nav-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* --- HEADER ORIGINAL --- */
+header {
+    background: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+    transition: background 0.5s ease;
+}
+
+/* --- 2. GENERADOR DE PALETA DE COLORES --- */
+.palette-container {
+    text-align: center;
+    padding: 15px;
+    background: var(--card-bg);
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.palette-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.palette-btn:hover {
+    transform: scale(1.05);
+}
+
+/* --- NUEVO: FORMULARIO DE INTERÉS --- */
+.form-container {
+    background: var(--card-bg);
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.submit-btn {
+    width: 100%;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.submit-btn:hover {
+    background: var(--primary-color);
+}
+
+#mensaje-exito {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    background: #d1fae5;
+    color: #065f46;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* --- 3. TARJETAS CON EFECTOS (INCLINACIÓN 3D) --- */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px;
+    perspective: 1000px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.1s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.card:hover {
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.category {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+button {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.details {
+    display: none;
+    margin-top: 10px;
+}
+
+iframe {
+    width: 100%;
+    height: 200px;
+    border: none;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="#" class="logo">🎓 UNILIST</a>
+    <ul class="nav-links">
+        <li class="nav-item"><a href="#" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+            <span class="nav-link">Categorías ▼</span>
+            <ul class="dropdown-menu">
+                <li><a href="#" onclick="filtrarUniversidades('Todas')">Todas</a></li>
+                <li><a href="#" onclick="filtrarUniversidades('Pública')">Públicas</a></li>
+                <li><a href="#" onclick="filtrarUniversidades('Privada')">Privadas</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Universidades en México</h1>
+    <p>Explora opciones académicas</p>
+</header>
+
+<div class="palette-container">
+    <span style="margin-right: 15px;">🎨 Personaliza los colores de la interfaz:</span>
+    <button class="palette-btn" id="cambiar-color">Cambiar Paleta</button>
+</div>
+
+<div class="form-container">
+    <h2>📝 Registro de Aspirante</h2>
+    <form id="registro-form">
+        <div class="form-group">
+            <label for="nombre">Tu Nombre:</label>
+            <input type="text" id="nombre" placeholder="Ej. Juan Pérez" required>
+        </div>
+        <div class="form-group">
+            <label for="universidad-select">Universidad de tu elección:</label>
+            <select id="universidad-select" required>
+                <option value="">-- Selecciona una universidad --</option>
+                </select>
+        </div>
+        <div class="form-group">
+            <label for="carrera">Carrera que deseas:</label>
+            <input type="text" id="carrera" placeholder="Ej. Ingeniería en Sistemas" required>
+        </div>
+        <button type="submit" class="submit-btn">Enviar Solicitud</button>
+    </form>
+    <div id="mensaje-exito"></div>
+</div>
+
+<div class="container" id="universidades"></div>
+
+<script>
+const universidades = [
+    {
+    nombre: "Universidad Cristóbal Colón",
+    categoria: "Privada",
+    costo: "$7,280 MXN",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/6/62/Logo_de_la_Universidad_Crist%C3%B3bal_Col%C3%B3n.svg",
+    mapa: "https://maps.google.com/maps?q=Veracruz&output=embed",
+    carreras: ["Administración", "Derecho", "Arquitectura"],
+    requisitos: "Acta, certificado, examen de admisión",
+    programas: "Licenciaturas y posgrados"
+    },
+    {
+    nombre: "Instituto Tecnológico de Veracruz",
+    categoria: "Pública",
+    costo: "$2,000 + ficha $1,803 MXN",
+    imagen: "https://offline.veracruz.tecnm.mx/img/logo.png",
+    mapa: "https://maps.google.com/maps?q=Veracruz&output=embed",
+    carreras: ["Industrial", "Sistemas", "Mecánica"],
+    requisitos: "Examen de admisión",
+    programas: "Ingenierías"
+    },
+    {
+    nombre: "Universidad Veracruzana",
+    categoria: "Pública",
+    costo: "$963 MXN",
+    imagen: "https://www.uv.mx/dgdaie/files/2013/08/zLogosimbolo_color.jpg",
+    mapa: "https://maps.google.com/maps?q=Xalapa&output=embed",
+    carreras: ["Medicina", "Derecho", "Psicología"],
+    requisitos: "EXANI-II",
+    programas: "Licenciaturas y posgrados"
+    },
+    {
+    nombre: "Universidad del Valle de México",
+    categoria: "Privada",
+    costo: "$6,000 MXN",
+    imagen: "https://sic.cultura.gob.mx/galeria_imagen/66141b42e0ed5logo.png",
+    mapa: "https://maps.google.com/maps?q=Mexico&output=embed",
+    carreras: ["Negocios", "Medicina", "Ingeniería"],
+    requisitos: "Certificado, inscripción",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "Escuela Náutica",
+    categoria: "Pública",
+    costo: "$22,045 MXN",
+    imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-_qo85qwftoL6J0SnEKzEqsjJui268i9T-A&s",
+    mapa: "https://maps.google.com/maps?q=Veracruz&output=embed",
+    carreras: ["Ingeniería Naval", "Transporte Marítimo", "Logística"],
+    requisitos: "Examen físico y académico",
+    programas: "Carreras marítimas"
+    },
+    {
+    nombre: "UNAM",
+    categoria: "Pública",
+    costo: "$0.25 a $10 MXN",
+    imagen: "https://www.cch-oriente.unam.mx/images/logos/print/escudo-unam-azul.png",
+    mapa: "https://maps.google.com/maps?q=UNAM&output=embed",
+    carreras: ["Ingeniería", "Medicina", "Derecho"],
+    requisitos: "Examen de admisión",
+    programas: "Amplia oferta académica"
+    },
+    {
+    nombre: "Instituto Politécnico Nacional",
+    categoria: "Pública",
+    costo: "$300 a $400 MXN",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Escudo_ipn.png",
+    mapa: "https://maps.google.com/maps?q=IPN&output=embed",
+    carreras: ["Ingeniería", "Robótica", "Computación"],
+    requisitos: "Examen de admisión",
+    programas: "Ingenierías y ciencias"
+    },
+    {
+    nombre: "Tecnológico de Monterrey",
+    categoria: "Privada",
+    costo: "$150,000 a $195,000 MXN",
+    imagen: "https://uniconexed.org/wp-content/uploads/2022/03/Tec-de-Monterrey-logo-horizontal-blue.png",
+    mapa: "https://maps.google.com/maps?q=Monterrey&output=embed",
+    carreras: ["Negocios", "Ingeniería", "Diseño"],
+    requisitos: "Examen + entrevista",
+    programas: "Programas internacionales"
+    },
+    {
+    nombre: "Universidad Iberoamericana",
+    categoria: "Privada",
+    costo: "$20,000 a $30,000 MXN",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Logo_Universidad_Iberoamericana.svg/3840px-Logo_Universidad_Iberoamericana.svg.png",
+    mapa: "https://maps.google.com/maps?q=Mexico&output=embed",
+    carreras: ["Comunicación", "Derecho", "Arquitectura"],
+    requisitos: "Proceso de admisión",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "UDLAP",
+    categoria: "Privada",
+    costo: "$20,000 a $30,000 MXN",
+    imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSird3V7hYWhYM0cSSvXA4O9wbd9Qpuv9IaTA&s",
+    mapa: "https://maps.google.com/maps?q=Puebla&output=embed",
+    carreras: ["Negocios", "Relaciones Internacionales", "Ingeniería"],
+    requisitos: "Examen de admisión",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "Universidad Anáhuac",
+    categoria: "Privada",
+    costo: "$25,000 a $40,000 MXN",
+    imagen: "https://educompara.com/file/2021/03/logo-anahuac2.png",
+    mapa: "https://maps.google.com/maps?q=Mexico&output=embed",
+    carreras: ["Medicina", "Derecho", "Negocios"],
+    requisitos: "Examen + entrevista",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "Universidad de Guadalajara",
+    categoria: "Pública",
+    costo: "$1,000 a $3,000 MXN",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Escudo_UdeG.svg",
+    mapa: "https://maps.google.com/maps?q=Guadalajara&output=embed",
+    carreras: ["Arquitectura", "Medicina", "Ingeniería"],
+    requisitos: "Examen de admisión",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "UAM",
+    categoria: "Pública",
+    costo: "Menos de $1,000 MXN",
+    imagen: "https://www.comunicacionsocial.uam.mx/identidaduam/images/el-emblema.jpg",
+    mapa: "https://maps.google.com/maps?q=UAM&output=embed",
+    carreras: ["Diseño", "Ingeniería", "Administración"],
+    requisitos: "Examen de admisión",
+    programas: "Licenciaturas"
+    },
+    {
+    nombre: "Universidad Autónoma Chapingo",
+    categoria: "Pública",
+    costo: "$1,000 MXN anual",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_Universidad_Aut%C3%B3noma_de_Chapingo.png",
+    mapa: "https://maps.google.com/maps?q=Chapingo&output=embed",
+    carreras: ["Agronomía", "Forestal", "Agroindustria"],
+    requisitos: "Examen + internado",
+    programas: "Carreras agrícolas"
+    },
+    {
+    nombre: "BUAP",
+    categoria: "Pública",
+    costo: "$700 a $2,000 MXN",
+    imagen: "https://logos-world.net/wp-content/uploads/2022/06/BUAP-Symbol.png",
+    mapa: "https://maps.google.com/maps?q=Puebla&output=embed",
+    carreras: ["Medicina", "Derecho", "Ingeniería"],
+    requisitos: "Examen de admisión",
+    programas: "Licenciaturas"
+    }
+];
+
+const container = document.getElementById("universidades");
+const selectUni = document.getElementById("universidad-select");
+
+// --- INICIALIZAR EL SELECT DEL FORMULARIO ---
+function inicializarFormulario() {
+    universidades.forEach(uni => {
+        const option = document.createElement("option");
+        option.value = uni.nombre;
+        option.textContent = uni.nombre;
+        selectUni.appendChild(option);
+    });
+}
+
+// --- INYECCIÓN Y EFECTO 3D EN TARJETAS ---
+function renderizarTarjetas(lista) {
+    container.innerHTML = ""; 
+
+    lista.forEach((uni) => {
+        const indexReal = universitiesIndex = universidades.findIndex(u => u.nombre === uni.nombre);
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <img src="${uni.imagen}">
+            <div class="card-content">
+                <h2>${uni.nombre}</h2>
+                <p class="category">${uni.categoria}</p>
+                <p><strong>Costo:</strong> ${uni.costo}</p>
+
+                <button onclick="toggleDetails(${indexReal})">Ver más</button>
+
+                <div class="details" id="details-${indexReal}">
+                    <p><strong>Programas:</strong> ${uni.programas}</p>
+                    <p><strong>Requisitos:</strong> ${uni.requisitos}</p>
+                    <ul>
+                        ${uni.carreras.map(c => `<li>${c}</li>`).join("")}
+                    </ul>
+                    <iframe src="${uni.mapa}"></iframe>
+                </div>
+            </div>
+        `;
+
+        // Efecto de inclinación 3D interactivo
+        card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((centerY - y) / centerY) * 15;
+            const rotateY = ((x - centerX) / centerX) * 15;
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener("mouseleave", () => {
+            card.style.transform = "rotateX(0deg) rotateY(0deg)";
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function toggleDetails(index) {
+    const detail = document.getElementById(`details-${index}`);
+    detail.style.display = detail.style.display === "block" ? "none" : "block";
+}
+
+// --- ACCIÓN DEL FILTRADO EN EL MENÚ DESPLEGABLE ---
+function filtrarUniversidades(categoria) {
+    if (categoria === 'Todas') {
+        renderizarTarjetas(universidades);
+    } else {
+        const filtradas = universidades.filter(uni => uni.categoria === categoria);
+        renderizarTarjetas(filtradas);
+    }
+}
+
+// --- GENERADOR DE PALETA DE COLORES ---
+function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+document.getElementById("cambiar-color").addEventListener("click", () => {
+    document.documentElement.style.setProperty('--primary-color', getRandomColor());
+    document.documentElement.style.setProperty('--secondary-color', getRandomColor());
+});
+
+// --- MANEJO DEL ENVÍO DEL FORMULARIO ---
+document.getElementById("registro-form").addEventListener("submit", (e) => {
+    e.preventDefault(); // Evita recargar la página
+
+    const nombre = document.getElementById("nombre").value;
+    const uniSeleccionada = selectUni.value;
+    const carrera = document.getElementById("carrera").value;
+    const mensajeExito = document.getElementById("mensaje-exito");
+
+    // Mostrar mensaje de éxito interactivo
+    mensajeExito.textContent = `¡Gracias ${nombre}! Tu interés por la carrera de "${carrera}" en la "${uniSeleccionada}" ha sido registrado.`;
+    mensajeExito.style.display = "block";
+
+    // Limpiar el formulario
+    document.getElementById("registro-form").reset();
+});
+
+// Inicializar la interfaz y el formulario
+inicializarFormulario();
+renderizarTarjetas(universidades);
+</script>
+
+</body>
+</html>
